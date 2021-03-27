@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
@@ -35,6 +35,7 @@ var myid;
 var checkss = 0;
 var poped = 0;
 var x = 5;
+var refreshRate;
 
 function init() {
 	show_menu(menu_hook);
@@ -220,6 +221,23 @@ function pop_tip(){
 	});
 }
 
+function isJSON(str) {
+	if (typeof str == 'string' && str) {
+		try {
+			var obj = JSON.parse(str);
+			if (typeof obj == 'object' && obj) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (e) {
+			console.log('error：' + str + '!!!' + e);
+			return false;
+		}
+	}
+	//console.log('It is not a string!')
+}
+
 function save() {
 	var node_sel = E("ssconf_basic_node").value
 	if (!node_sel) {
@@ -237,8 +255,8 @@ function save() {
 	//define dbus obkect to save
 	var dbus = {};
 	//key define
-	var params_input = ["ssconf_basic_node", "ss_basic_mode", "ss_basic_server", "ss_basic_port", "ss_basic_method", "ss_basic_koolgame_udp", "ss_basic_ss_obfs", "ss_basic_ss_obfs_host", "ss_basic_rss_protocol", "ss_basic_rss_protocol_param", "ss_basic_rss_obfs", "ss_basic_rss_obfs_param", "ssconf_basic_ping_node", "ssconf_basic_ping_method", "ssconf_basic_test_node", "ssconf_basic_test_domain", "ss_dns_china", "ss_dns_china_user", "ss_foreign_dns", "ss_dns2socks_user", "ss_chinadns_user", "ss_chinadns1_user",  "ss_sstunnel_user", "ss_direct_user", "ss_game2_dns_foreign", "ss_game2_dns2ss_user", "$ss_basic_kcp_lserver", "ss_basic_kcp_lport", "ss_basic_kcp_server", "ss_basic_kcp_port", "ss_basic_kcp_parameter", "ss_basic_rule_update", "ss_basic_rule_update_time", "ssr_subscribe_mode", "ssr_subscribe_obfspara", "ssr_subscribe_obfspara_val", "ss_basic_online_links_goss", "ss_basic_node_update", "ss_basic_node_update_day", "ss_basic_node_update_hr", "ss_base64_links", "ss_basic_refreshrate", "ss_acl_default_port", "ss_online_action", "ss_acl_default_mode", "ss_basic_kcp_method", "ss_basic_kcp_password", "ss_basic_kcp_mode", "ss_basic_kcp_encrypt", "ss_basic_kcp_mtu", "ss_basic_kcp_sndwnd", "ss_basic_kcp_rcvwnd", "ss_basic_kcp_conn", "ss_basic_kcp_extra", "ss_basic_udp_software", "ss_basic_udp_node", "ss_basic_udpv1_lserver", "ss_basic_udpv1_lport", "ss_basic_udpv1_rserver", "ss_basic_udpv1_rport", "ss_basic_udpv1_password", "ss_basic_udpv1_mode", "ss_basic_udpv1_duplicate_nu", "ss_basic_udpv1_duplicate_time", "ss_basic_udpv1_jitter", "ss_basic_udpv1_report", "ss_basic_udpv1_drop", "ss_basic_udpv2_lserver", "ss_basic_udpv2_lport", "ss_basic_udpv2_rserver", "ss_basic_udpv2_rport", "ss_basic_udpv2_password", "ss_basic_udpv2_fec", "ss_basic_udpv2_timeout", "ss_basic_udpv2_mode", "ss_basic_udpv2_report", "ss_basic_udpv2_mtu", "ss_basic_udpv2_jitter", "ss_basic_udpv2_interval", "ss_basic_udpv2_drop", "ss_basic_udpv2_other", "ss_basic_udp2raw_lserver", "ss_basic_udp2raw_lport", "ss_basic_udp2raw_rserver", "ss_basic_udp2raw_rport", "ss_basic_udp2raw_password", "ss_basic_udp2raw_rawmode", "ss_basic_udp2raw_ciphermode", "ss_basic_udp2raw_authmode", "ss_basic_udp2raw_lowerlevel", "ss_basic_udp2raw_other", "ss_basic_udp_upstream_mtu", "ss_basic_udp_upstream_mtu_value", "ss_basic_v2ray_uuid", "ss_basic_v2ray_alterid", "ss_basic_v2ray_security", "ss_basic_v2ray_network", "ss_basic_v2ray_headtype_tcp", "ss_basic_v2ray_headtype_kcp", "ss_basic_v2ray_network_path", "ss_basic_v2ray_network_host", "ss_basic_v2ray_network_security", "ss_basic_v2ray_mux_concurrency", "ss_reboot_check", "ss_basic_week", "ss_basic_day", "ss_basic_inter_min", "ss_basic_inter_hour", "ss_basic_inter_day", "ss_basic_inter_pre", "ss_basic_time_hour", "ss_basic_time_min", "ss_basic_tri_reboot_time", "ss_basic_tri_reboot_policy", , "ss_basic_dnsmasq_fastlookup"];
-	var params_check = ["ss_basic_enable", "ss_basic_use_kcp", "ss_basic_gfwlist_update", "ss_basic_chnroute_update", "ss_basic_cdn_update", "ss_basic_kcp_nocomp", "ss_basic_udp_boost_enable", "ss_basic_udpv1_disable_filter", "ss_basic_udpv2_disableobscure", "ss_basic_udpv2_disablechecksum", "ss_basic_udp2raw_boost_enable", "ss_basic_udp2raw_a", "ss_basic_udp2raw_keeprule", "ss_basic_v2ray_use_json", "ss_basic_v2ray_mux_enable"];
+	var params_input = ["ssconf_basic_node", "ss_basic_mode", "ss_basic_server", "ss_basic_port", "ss_basic_method", "ss_basic_koolgame_udp", "ss_basic_ss_v2ray_plugin", "ss_basic_ss_v2ray_plugin_opts", "ss_basic_rss_protocol", "ss_basic_rss_protocol_param", "ss_basic_rss_obfs", "ss_basic_rss_obfs_param", "ssconf_basic_ping_node", "ssconf_basic_ping_method", "ssconf_basic_test_node", "ssconf_basic_test_domain", "ss_dns_china", "ss_dns_china_user", "ss_foreign_dns", "ss_dns2socks_user", "ss_chinadns_user", "ss_chinadns1_user",  "ss_sstunnel_user", "ss_direct_user", "ss_game2_dns_foreign", "ss_game2_dns2ss_user", "$ss_basic_kcp_lserver", "ss_basic_kcp_lport", "ss_basic_kcp_server", "ss_basic_kcp_port", "ss_basic_kcp_parameter", "ss_basic_rule_update", "ss_basic_rule_update_time", "ssr_subscribe_mode", "ssr_subscribe_obfspara", "ssr_subscribe_obfspara_val", "ss_basic_online_links_goss", "ss_basic_node_update", "ss_basic_node_update_day", "ss_basic_node_update_hr", "ss_base64_links", "ss_basic_refreshrate", "ss_basic_refreshrate", "ss_acl_default_port", "ss_online_action", "ss_acl_default_mode", "ss_basic_kcp_method", "ss_basic_kcp_password", "ss_basic_kcp_mode", "ss_basic_kcp_encrypt", "ss_basic_kcp_mtu", "ss_basic_kcp_sndwnd", "ss_basic_kcp_rcvwnd", "ss_basic_kcp_conn", "ss_basic_kcp_extra", "ss_basic_udp_software", "ss_basic_udp_node", "ss_basic_udpv1_lserver", "ss_basic_udpv1_lport", "ss_basic_udpv1_rserver", "ss_basic_udpv1_rport", "ss_basic_udpv1_password", "ss_basic_udpv1_mode", "ss_basic_udpv1_duplicate_nu", "ss_basic_udpv1_duplicate_time", "ss_basic_udpv1_jitter", "ss_basic_udpv1_report", "ss_basic_udpv1_drop", "ss_basic_udpv2_lserver", "ss_basic_udpv2_lport", "ss_basic_udpv2_rserver", "ss_basic_udpv2_rport", "ss_basic_udpv2_password", "ss_basic_udpv2_fec", "ss_basic_udpv2_timeout", "ss_basic_udpv2_mode", "ss_basic_udpv2_report", "ss_basic_udpv2_mtu", "ss_basic_udpv2_jitter", "ss_basic_udpv2_interval", "ss_basic_udpv2_drop", "ss_basic_udpv2_other", "ss_basic_udp2raw_lserver", "ss_basic_udp2raw_lport", "ss_basic_udp2raw_rserver", "ss_basic_udp2raw_rport", "ss_basic_udp2raw_password", "ss_basic_udp2raw_rawmode", "ss_basic_udp2raw_ciphermode", "ss_basic_udp2raw_authmode", "ss_basic_udp2raw_lowerlevel", "ss_basic_udp2raw_other", "ss_basic_udp_upstream_mtu", "ss_basic_udp_upstream_mtu_value", "ss_basic_v2ray_uuid", "ss_basic_v2ray_alterid", "ss_basic_v2ray_security", "ss_basic_v2ray_network", "ss_basic_v2ray_headtype_tcp", "ss_basic_v2ray_headtype_kcp", "ss_basic_v2ray_network_path", "ss_basic_v2ray_network_host", "ss_basic_v2ray_network_security", "ss_basic_v2ray_mux_concurrency", "ss_reboot_check", "ss_basic_week", "ss_basic_day", "ss_basic_inter_min", "ss_basic_inter_hour", "ss_basic_inter_day", "ss_basic_inter_pre", "ss_basic_time_hour", "ss_basic_time_min", "ss_basic_tri_reboot_time", "ss_basic_tri_reboot_policy", "ss_basic_dnsmasq_fastlookup", "ss_basic_server_resolver", "ss_basic_server_resolver_user"];
+	var params_check = ["ss_basic_enable", "ss_basic_use_kcp", "ss_basic_gfwlist_update", "ss_basic_chnroute_update", "ss_basic_cdn_update", "ss_basic_kcp_nocomp", "ss_basic_udp_boost_enable", "ss_basic_udpv1_disable_filter", "ss_basic_udpv2_disableobscure", "ss_basic_udpv2_disablechecksum", "ss_basic_udp2raw_boost_enable", "ss_basic_udp2raw_a", "ss_basic_udp2raw_keeprule", "ss_basic_v2ray_use_json", "ss_basic_v2ray_mux_enable", "ss_basic_dns_hijack"];
 	var params_base64_a = ["ss_dnsmasq", "ss_wan_white_ip", "ss_wan_white_domain", "ss_wan_black_ip", "ss_wan_black_domain", "ss_online_links"];
 	var params_base64_b = ["ss_basic_password", "ss_basic_custom"];
 	// collect data from input
@@ -269,33 +287,66 @@ function save() {
 	if(E('ss_basic_v2ray_json').value.indexOf("vmess://") != -1){
 		var vmess_node = JSON.parse(Base64.decode(E('ss_basic_v2ray_json').value.split("//")[1]));
 		dbus["ss_basic_server"] = vmess_node.add;
+		dbus["ssconf_basic_server_" + node_sel] = vmess_node.add;
 		dbus["ss_basic_port"] = vmess_node.port;
+		dbus["ssconf_basic_port_" + node_sel] = vmess_node.port;
 		dbus["ss_basic_v2ray_uuid"] = vmess_node.id;
+		dbus["ssconf_basic_v2ray_uuid_" + node_sel] = vmess_node.id;
 		dbus["ss_basic_v2ray_security"] = "auto";
+		dbus["ssconf_basic_v2ray_security_" + node_sel] = "auto";
 		dbus["ss_basic_v2ray_alterid"] = vmess_node.aid;
+		dbus["ssconf_basic_v2ray_alterid_" + node_sel] = vmess_node.aid;
 		dbus["ss_basic_v2ray_network"] = vmess_node.net;
+		dbus["ssconf_basic_v2ray_network_" + node_sel] = vmess_node.net;
 		if(vmess_node.net == "tcp"){
 			dbus["ss_basic_v2ray_headtype_tcp"] = vmess_node.type;
+			dbus["ssconf_basic_v2ray_headtype_tcp_" + node_sel] = vmess_node.type;
 		}else if(vmess_node.net == "kcp"){
 			dbus["ss_basic_v2ray_headtype_kcp"] = vmess_node.type;
+			dbus["ssconf_basic_v2ray_headtype_kcp_" + node_sel] = vmess_node.type;
 		}
 		dbus["ss_basic_v2ray_network_host"] = vmess_node.host;
+		dbus["ssconf_basic_v2ray_network_host_" + node_sel] = vmess_node.host;
 		dbus["ss_basic_v2ray_network_path"] = vmess_node.path;
+		dbus["ssconf_basic_v2ray_network_path_" + node_sel] = vmess_node.path;
 		if(vmess_node.tls == "tls"){
 			dbus["ss_basic_v2ray_network_security"] = "tls";
+			dbus["ssconf_basic_v2ray_network_security_" + node_sel] = "tls";
 		}else{
 			dbus["ss_basic_v2ray_network_security"] = "none";
+			dbus["ssconf_basic_v2ray_network_security_" + node_sel] = "none";
 		}
 		dbus["ss_basic_v2ray_mux_enable"] = 1;
+		dbus["ssconf_basic_v2ray_mux_enable_" + node_sel] = 1;
 		dbus["ss_basic_v2ray_mux_concurrency"] = 8;
+		dbus["ssconf_basic_v2ray_mux_concurrency_" + node_sel] = 8;
 		dbus["ss_basic_v2ray_use_json"] = 0;
+		dbus["ssconf_basic_v2ray_use_json_" + node_sel] = 0;
 		dbus["ss_basic_v2ray_json"] = "";
+		dbus["ssconf_basic_v2ray_json"] = "";
 	}else{
-		dbus["ss_basic_v2ray_json"] = Base64.encode(pack_js(E('ss_basic_v2ray_json').value));
+		if (E("ss_basic_v2ray_use_json").checked == true){
+			if(isJSON(E('ss_basic_v2ray_json').value)){
+				if(E('ss_basic_v2ray_json').value.indexOf("outbound") != -1){
+					dbus["ss_basic_v2ray_json"] = Base64.encode(pack_js(E('ss_basic_v2ray_json').value));
+					dbus["ssconf_basic_v2ray_json_" + node_sel] = Base64.encode(pack_js(E('ss_basic_v2ray_json').value));
+					var param_v2 = ["server", "port", "v2ray_uuid", "v2ray_security", "v2ray_alterid", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_host", "v2ray_network_path", "v2ray_network_security", "v2ray_mux_enable", "v2ray_mux_concurrency"];
+					for (var i = 0; i < param_v2.length; i++) {
+						dbus["ss_basic_" + param_v2[i]] = "";
+						dbus["ssconf_basic_" + param_v2[i] + "_" + node_sel] = "";
+					}
+				}else{
+					alert("错误！你的json配置文件有误！\n正确格式请参考:https://www.v2ray.com/chapter_02/01_overview.html");
+					return false;
+				}
+			}else{
+				alert("错误！检测到你输入的v2ray配置不是标准json格式！");
+				return false;
+			}
+		}
 	}
-
 	// node data: write node data under using from the main pannel incase of data change
-	var params = ["server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "koolgame_udp", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency"];
+	var params = ["server", "mode", "port", "method", "ss_v2ray_plugin", "ss_v2ray_plugin_opts", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "koolgame_udp", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency"];
 	for (var i = 0; i < params.length; i++) {
 		dbus["ssconf_basic_" + params[i] + "_" + node_sel] = E("ss_basic_" + params[i]).value;
 	}
@@ -305,34 +356,6 @@ function save() {
 	dbus["ssconf_basic_v2ray_mux_enable_" + node_sel] = E("ss_basic_v2ray_mux_enable").checked ? '1' : '0';
 	// node data: base64
 	dbus["ssconf_basic_password_" + node_sel] = Base64.encode(E("ss_basic_password").value);
-	// for v2ray json, we need to process first: parse vmess:// format, encode json format
-	if(E('ss_basic_v2ray_json').value.indexOf("vmess://") != -1){
-		var vmess_node = JSON.parse(Base64.decode(E('ss_basic_v2ray_json').value.split("//")[1]));
-		dbus["ssconf_basic_server_" + node_sel] = vmess_node.add;
-		dbus["ssconf_basic_port_" + node_sel] = vmess_node.port;
-		dbus["ssconf_basic_v2ray_uuid_" + node_sel] = vmess_node.id;
-		dbus["ssconf_basic_v2ray_security_" + node_sel] = "auto";
-		dbus["ssconf_basic_v2ray_alterid_" + node_sel] = vmess_node.aid;
-		dbus["ssconf_basic_v2ray_network_" + node_sel] = vmess_node.net;
-		if(vmess_node.net == "tcp"){
-			dbus["ssconf_basic_v2ray_headtype_tcp_" + node_sel] = vmess_node.type;
-		}else if(vmess_node.net == "kcp"){
-			dbus["ssconf_basic_v2ray_headtype_kcp_" + node_sel] = vmess_node.type;
-		}
-		dbus["ssconf_basic_v2ray_network_host_" + node_sel] = vmess_node.host;
-		dbus["ssconf_basic_v2ray_network_path_" + node_sel] = vmess_node.path;
-		if(vmess_node.tls == "tls"){
-			dbus["ssconf_basic_v2ray_network_security_" + node_sel] = "tls";
-		}else{
-			dbus["ssconf_basic_v2ray_network_security_" + node_sel] = "none";
-		}	
-		dbus["ssconf_basic_v2ray_mux_enable_" + node_sel] = 1;
-		dbus["ssconf_basic_v2ray_mux_concurrency_" + node_sel] = 8;
-		dbus["ssconf_basic_v2ray_use_json_" + node_sel] = 0;
-		dbus["ssconf_basic_v2ray_json"] = "";
-	}else{
-		dbus["ssconf_basic_v2ray_json_" + node_sel] = Base64.encode(pack_js(E('ss_basic_v2ray_json').value));
-	}
 	// collect values in acl table
 	maxid = parseInt($("#ACL_table > tbody > tr:eq(-2) > td:nth-child(2) > input").attr("id").split("_")[3]);
 	if(maxid){
@@ -346,7 +369,7 @@ function save() {
 	}
 	// adjust some value when switch node between ss ssr v2ray koolgame
 	if (typeof(db_ss["ssconf_basic_rss_protocol_" + node_sel]) != "undefined"){
-		var remove_ssr = [ "ss_obfs", "ss_obfs_host", "koolgame_udp", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_enable", "v2ray_mux_concurrency", "v2ray_json"];
+		var remove_ssr = [ "ss_v2ray_plugin", "ss_v2ray_plugin_opts", "koolgame_udp", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_enable", "v2ray_mux_concurrency", "v2ray_json"];
 		//console.log("use ssr");
 		dbus["ss_basic_type"] = "1"
 		dbus["ssconf_basic_type_" + node_sel] = "1"
@@ -356,7 +379,7 @@ function save() {
 		}
 	} else {
 		if (typeof(db_ss["ssconf_basic_koolgame_udp_" + node_sel]) != "undefined"){
-			var remove_gamev2 = [ "ss_obfs", "ss_obfs_host", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_enable", "v2ray_mux_concurrency", "v2ray_json"];
+			var remove_gamev2 = [ "ss_v2ray_plugin", "ss_v2ray_plugin_opts", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "v2ray_use_json", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_enable", "v2ray_mux_concurrency", "v2ray_json"];
 			//console.log("use v2");
 			dbus["ss_basic_type"] = "2"
 			dbus["ssconf_basic_type_" + node_sel] = "2"
@@ -366,7 +389,7 @@ function save() {
 			}
 		} else {
 			if (typeof(db_ss["ssconf_basic_v2ray_use_json_" + node_sel]) != "undefined"){
-				var remove_v2ray = [ "ss_obfs", "ss_obfs_host", "koolgame_udp", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param"];
+				var remove_v2ray = [ "ss_v2ray_plugin", "ss_v2ray_plugin_opts", "koolgame_udp", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param"];
 				//console.log("use v2ray");
 				dbus["ss_basic_type"] = "3"
 				dbus["ssconf_basic_type_" + node_sel] = "3"
@@ -421,13 +444,10 @@ function save() {
 			post_dbus[key] = dbus[key];
 		}
 	}
-
 	console.log("post_dbus", post_dbus);
-
 	post_dbus["SystemCmd"] = "ss_config.sh";
 	post_dbus["action_mode"] = " Refresh ";
 	post_dbus["current_page"] = "Main_Ss_Content.asp";
-	
 	push_data(post_dbus);
 }
 
@@ -537,13 +557,10 @@ function verifyFields(r) {
 		$("#mode_state").html("运行状态【回国模式】");
 	}
 
-	//if (!E("ss_basic_ss_obfs").value) {
-	//	E("ss_basic_ss_obfs").value = "0"
-	//}
 
 	//ss-libev
-	showhide("ss_obfs", (ss_on));
-	showhide("ss_obfs_host", (ss_on && E("ss_basic_ss_obfs").value != "0"));
+	showhide("ss_v2ray_plugin", (ss_on));
+	showhide("ss_v2ray_plugin_opts", (ss_on && E("ss_basic_ss_v2ray_plugin").value != "0"));
 	//ssr-libev
 	showhide("ss_basic_rss_protocol_param_tr", (ssr_on));
 	showhide("ss_basic_rss_protocol_tr", (ssr_on));
@@ -581,8 +598,8 @@ function verifyFields(r) {
 	showhide("dns_plan_foreign_game2", koolgame_on);	
 	//node add/edit pannel
 	if (save_flag == "shadowsocks") {
-		showhide("ss_obfs_support", ($("#ss_node_table_mode").val() != "3"));
-		showhide("ss_obfs_host_support", ($("#ss_node_table_mode").val() != "3" && $("#ss_node_table_ss_obfs").val() != "0"));
+		showhide("ss_v2ray_plugin_support", ($("#ss_node_table_mode").val() != "3"));
+		showhide("ss_v2ray_plugin_opts_support", ($("#ss_node_table_mode").val() != "3" && $("#ss_node_table_ss_v2ray_plugin").val() != "0"));
 	}
 	if (save_flag == "v2ray") {
 		if(E("ss_node_table_v2ray_use_json").checked){
@@ -663,71 +680,71 @@ function verifyFields(r) {
 
 	__ss_reboot_check=db_ss["ss_reboot_check"];
 	if (__ss_reboot_check == "0") {
-		document.getElementById('_ss_basic_day_pre').style.display="none";
-		document.getElementById('_ss_basic_week_pre').style.display="none";
-		document.getElementById('_ss_basic_time_pre').style.display="none";
-		document.getElementById('_ss_basic_inter_pre').style.display="none";
-		document.getElementById('_ss_basic_custom_pre').style.display="none";
-		document.getElementById('_ss_basic_send_text').style.display="none";
+		E('_ss_basic_day_pre').style.display="none";
+		E('_ss_basic_week_pre').style.display="none";
+		E('_ss_basic_time_pre').style.display="none";
+		E('_ss_basic_inter_pre').style.display="none";
+		E('_ss_basic_custom_pre').style.display="none";
+		E('_ss_basic_send_text').style.display="none";
 	} else if(__ss_reboot_check	== "1")	{
-		document.getElementById('_ss_basic_week_pre').style.display="none";
-		document.getElementById('_ss_basic_day_pre').style.display="none";
-		document.getElementById('_ss_basic_time_pre').style.display="inline";
-		document.getElementById('_ss_basic_inter_pre').style.display="none";
-		document.getElementById('_ss_basic_custom_pre').style.display="none";
-		document.getElementById('_ss_basic_send_text').style.display="inline";
+		E('_ss_basic_week_pre').style.display="none";
+		E('_ss_basic_day_pre').style.display="none";
+		E('_ss_basic_time_pre').style.display="inline";
+		E('_ss_basic_inter_pre').style.display="none";
+		E('_ss_basic_custom_pre').style.display="none";
+		E('_ss_basic_send_text').style.display="inline";
 	} else if(__ss_reboot_check	== "2")	{
-		document.getElementById('_ss_basic_week_pre').style.display="inline";
-		document.getElementById('_ss_basic_day_pre').style.display="none";
-		document.getElementById('_ss_basic_time_pre').style.display="inline";
-		document.getElementById('_ss_basic_inter_pre').style.display="none";
-		document.getElementById('_ss_basic_custom_pre').style.display="none";
-		document.getElementById('_ss_basic_send_text').style.display="inline";
+		E('_ss_basic_week_pre').style.display="inline";
+		E('_ss_basic_day_pre').style.display="none";
+		E('_ss_basic_time_pre').style.display="inline";
+		E('_ss_basic_inter_pre').style.display="none";
+		E('_ss_basic_custom_pre').style.display="none";
+		E('_ss_basic_send_text').style.display="inline";
 	} else if(__ss_reboot_check	== "3")	{
-		document.getElementById('_ss_basic_week_pre').style.display="none";
-		document.getElementById('_ss_basic_day_pre').style.display="inline";
-		document.getElementById('_ss_basic_time_pre').style.display="inline";
-		document.getElementById('_ss_basic_inter_pre').style.display="none";
-		document.getElementById('_ss_basic_custom_pre').style.display="none";
-		document.getElementById('_ss_basic_send_text').style.display="inline";
+		E('_ss_basic_week_pre').style.display="none";
+		E('_ss_basic_day_pre').style.display="inline";
+		E('_ss_basic_time_pre').style.display="inline";
+		E('_ss_basic_inter_pre').style.display="none";
+		E('_ss_basic_custom_pre').style.display="none";
+		E('_ss_basic_send_text').style.display="inline";
 	} else if(__ss_reboot_check	== "4")	{
-		document.getElementById('_ss_basic_week_pre').style.display="none";
-		document.getElementById('_ss_basic_day_pre').style.display="none";
-		document.getElementById('_ss_basic_time_pre').style.display="none";
-		document.getElementById('_ss_basic_inter_pre').style.display="inline";
-		document.getElementById('_ss_basic_custom_pre').style.display="none";
-		document.getElementById('_ss_basic_send_text').style.display="inline";
+		E('_ss_basic_week_pre').style.display="none";
+		E('_ss_basic_day_pre').style.display="none";
+		E('_ss_basic_time_pre').style.display="none";
+		E('_ss_basic_inter_pre').style.display="inline";
+		E('_ss_basic_custom_pre').style.display="none";
+		E('_ss_basic_send_text').style.display="inline";
 		__ss_basic_inter_pre=db_ss["ss_basic_inter_pre"];
 		if (__ss_basic_inter_pre ==	"1") {
-			document.getElementById('ss_basic_inter_min').style.display="inline";
-			document.getElementById('ss_basic_inter_hour').style.display="none";
-			document.getElementById('ss_basic_inter_day').style.display="none";
-			document.getElementById('_ss_basic_time_pre').style.display="none";
-			document.getElementById('_ss_basic_inter_pre').style.display="inline";
-			document.getElementById('_ss_basic_send_text').style.display="inline";
+			E('ss_basic_inter_min').style.display="inline";
+			E('ss_basic_inter_hour').style.display="none";
+			E('ss_basic_inter_day').style.display="none";
+			E('_ss_basic_time_pre').style.display="none";
+			E('_ss_basic_inter_pre').style.display="inline";
+			E('_ss_basic_send_text').style.display="inline";
 		} else if(__ss_basic_inter_pre == "2") {
-			document.getElementById('ss_basic_inter_min').style.display="none";
-			document.getElementById('ss_basic_inter_hour').style.display="inline";
-			document.getElementById('ss_basic_inter_day').style.display="none";
-			document.getElementById('_ss_basic_time_pre').style.display="none";
-			document.getElementById('_ss_basic_inter_pre').style.display="inline";
-			document.getElementById('_ss_basic_send_text').style.display="inline";
+			E('ss_basic_inter_min').style.display="none";
+			E('ss_basic_inter_hour').style.display="inline";
+			E('ss_basic_inter_day').style.display="none";
+			E('_ss_basic_time_pre').style.display="none";
+			E('_ss_basic_inter_pre').style.display="inline";
+			E('_ss_basic_send_text').style.display="inline";
 		} else if(__ss_basic_inter_pre == "3") {
-			document.getElementById('ss_basic_inter_min').style.display="none";
-			document.getElementById('ss_basic_inter_hour').style.display="none";
-			document.getElementById('ss_basic_inter_day').style.display="inline";
-			document.getElementById('_ss_basic_time_pre').style.display="inline";
-			document.getElementById('_ss_basic_inter_pre').style.display="inline";
-			document.getElementById('_ss_basic_send_text').style.display="inline";
+			E('ss_basic_inter_min').style.display="none";
+			E('ss_basic_inter_hour').style.display="none";
+			E('ss_basic_inter_day').style.display="inline";
+			E('_ss_basic_time_pre').style.display="inline";
+			E('_ss_basic_inter_pre').style.display="inline";
+			E('_ss_basic_send_text').style.display="inline";
 		}
 	} else if(__ss_reboot_check	== "5")	{
-		document.getElementById('_ss_basic_week_pre').style.display="none";
-		document.getElementById('_ss_basic_day_pre').style.display="none";
-		document.getElementById('_ss_basic_time_pre').style.display="inline";
-		document.getElementById('_ss_basic_inter_pre').style.display="none";
-		document.getElementById('_ss_basic_custom_pre').style.display="inline";
-		document.getElementById('_ss_basic_send_text').style.display="inline";
-		document.getElementById('ss_basic_time_hour').style.display="none";
+		E('_ss_basic_week_pre').style.display="none";
+		E('_ss_basic_day_pre').style.display="none";
+		E('_ss_basic_time_pre').style.display="inline";
+		E('_ss_basic_inter_pre').style.display="none";
+		E('_ss_basic_custom_pre').style.display="inline";
+		E('_ss_basic_send_text').style.display="inline";
+		E('ss_basic_time_hour').style.display="none";
 	}
 	
 	refresh_acl_table();
@@ -741,6 +758,7 @@ function update_visibility() {
 	var e = E("ss_dns_china").value == "12";
 	var f = E("ss_foreign_dns").value;
 	var g = E("ss_basic_tri_reboot_time").value;
+	var h = E("ss_basic_server_resolver").value == "12";
 	showhide("ss_basic_rule_update_time", a);
 	showhide("update_choose", a);
 	showhide("ss_basic_node_update_day", b);
@@ -748,6 +766,7 @@ function update_visibility() {
 	showhide("ssr_subscribe_obfspara_val", c);
 	showhide("ss_basic_udp_upstream_mtu_value", d);
 	showhide("ss_dns_china_user", e);
+	showhide("ss_basic_server_resolver_user", h);
 	showhide("ss_chinadns_user", (f == "2"));
 	showhide("ss_dns2socks_user", (f == "3"));
 	showhide("ss_sstunnel_user", (f == "4"));
@@ -776,7 +795,7 @@ function generate_lan_list(){
 function ssconf_node2obj(node_sel) {
 	var p = "ssconf_basic";
 	var obj = {};
-	var params2 = ["password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_obfs", "ss_obfs_host", "koolgame_udp", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_mux_enable", "v2ray_network_security", "v2ray_mux_concurrency", "v2ray_use_json"];
+	var params2 = ["password", "v2ray_json", "server", "mode", "port", "password", "method", "ss_v2ray_plugin", "ss_v2ray_plugin_opts", "koolgame_udp", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "use_kcp", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_mux_enable", "v2ray_network_security", "v2ray_mux_concurrency", "v2ray_use_json"];
 
 	for (var i = 0; i < params2.length; i++) {
 		obj["ss_basic_" + params2[i]] = db_ss[p + "_" + params2[i] + "_" + node_sel] || "";
@@ -878,7 +897,7 @@ function getAllConfigs() {
 			obj["method"] = db_ss[p + "_method_" + field];
 		}
 
-		var params = ["password", "mode", "ss_obfs", "ss_obfs_host", "koolgame_udp", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "group", "weight", "lbmode", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable"];
+		var params = ["password", "mode", "ss_v2ray_plugin", "ss_v2ray_plugin_opts", "koolgame_udp", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "group", "weight", "lbmode", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable"];
 		for (var i = 0; i < params.length; i++) {
 			var ofield = p + "_" + params[i] + "_" + field;
 			if (typeof db_ss["ssconf_basic_mode_" + field] == "undefined") {
@@ -1007,8 +1026,8 @@ function Add_profile() { //点击节点页面内添加节点动作
 	E("ss_node_table_password").value = "";
 	E("ss_node_table_method").value = "aes-256-cfb";
 	E("ss_node_table_mode").value = "1";
-	E("ss_node_table_ss_obfs").value = "0"
-	E("ss_node_table_ss_obfs_host").value = "";
+	E("ss_node_table_ss_v2ray_plugin").value = "0"
+	E("ss_node_table_ss_v2ray_plugin_opts").value = "";
 	E("ss_node_table_rss_protocol").value = "origin";
 	E("ss_node_table_rss_protocol_param").value = "";
 	E("ss_node_table_rss_obfs").value = "plain";
@@ -1064,8 +1083,8 @@ function tabclickhandler(_type) {
 		E('v2ray_mux_enable_tr').style.display = "none";
 		E('v2ray_mux_concurrency_tr').style.display = "none";
 		E('v2ray_json_tr').style.display = "none";
-		showhide("ss_obfs_support", ($("#ss_node_table_mode").val() != "3"));
-		showhide("ss_obfs_host_support", ($("#ss_node_table_mode").val() != "3" && $("#ss_node_table_ss_obfs").val() != "0"));
+		showhide("ss_v2ray_plugin_support", ($("#ss_node_table_mode").val() != "3"));
+		showhide("ss_v2ray_plugin_opts_support", ($("#ss_node_table_mode").val() != "3" && $("#ss_node_table_ss_v2ray_plugin").val() != "0"));
 	} else if (_type == 1) {
 		save_flag = "shadowsocksR";
 		E("vpnc_type").value = "shadowsocksR";
@@ -1076,8 +1095,8 @@ function tabclickhandler(_type) {
 		E('ss_port_support_tr').style.display = "";
 		E('ss_passwd_support_tr').style.display = "";
 		E('ss_method_support_tr').style.display = "";
-		E('ss_obfs_support').style.display = "none";
-		E('ss_obfs_host_support').style.display = "none";
+		E('ss_v2ray_plugin_support').style.display = "none";
+		E('ss_v2ray_plugin_opts_support').style.display = "none";
 		E('ssr_protocol_tr').style.display = "";
 		E('ssr_protocol_param_tr').style.display = "";
 		E('ssr_obfs_tr').style.display = "";
@@ -1105,8 +1124,8 @@ function tabclickhandler(_type) {
 		E('ss_port_support_tr').style.display = "";
 		E('ss_passwd_support_tr').style.display = "";
 		E('ss_method_support_tr').style.display = "";
-		E('ss_obfs_support').style.display = "none";
-		E('ss_obfs_host_support').style.display = "none";
+		E('ss_v2ray_plugin_support').style.display = "none";
+		E('ss_v2ray_plugin_opts_support').style.display = "none";
 		E('ssr_protocol_tr').style.display = "none";
 		E('ssr_protocol_param_tr').style.display = "none";
 		E('ssr_obfs_tr').style.display = "none";
@@ -1132,8 +1151,8 @@ function tabclickhandler(_type) {
 		E('ss_name_support_tr').style.display = "";
 		E('ss_passwd_support_tr').style.display = "none";
 		E('ss_method_support_tr').style.display = "none";
-		E('ss_obfs_support').style.display = "none";
-		E('ss_obfs_host_support').style.display = "none";
+		E('ss_v2ray_plugin_support').style.display = "none";
+		E('ss_v2ray_plugin_opts_support').style.display = "none";
 		E('ssr_protocol_tr').style.display = "none";
 		E('ssr_protocol_param_tr').style.display = "none";
 		E('ssr_obfs_tr').style.display = "none";
@@ -1199,7 +1218,7 @@ function add_ss_node_conf(flag) { //点击添加按钮动作
 	var ns = {};
 	var p = "ssconf_basic";
 	node_global_max += 1;
-	var params1 = ["mode", "name", "server", "port", "method", "ss_obfs", "ss_obfs_host"]; //for ss
+	var params1 = ["mode", "name", "server", "port", "method", "ss_v2ray_plugin", "ss_v2ray_plugin_opts"]; //for ss
 	var params2 = ["mode", "name", "server", "port", "method", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param"]; //for ssr
 	var params3 = ["mode", "name", "server", "port", "method", "koolgame_udp"]; //for ssr
 	var params4_1 = ["mode", "name", "server", "port", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency"]; //for v2ray
@@ -1241,31 +1260,42 @@ function add_ss_node_conf(flag) { //点击添加按钮动作
 				var vmess_node = JSON.parse(Base64.decode(E('ss_node_table_v2ray_json').value.split("//")[1]));
 				console.log("use v2ray vmess://")
 				console.log(vmess_node)
-				ns["ssconf_basic_server_" + node_global_max] = vmess_node.add;
-				ns["ssconf_basic_port_" + node_global_max] = vmess_node.port;
-				ns["ssconf_basic_v2ray_uuid_" + node_global_max] = vmess_node.id;
-				ns["ssconf_basic_v2ray_security_" + node_global_max] = "auto";
-				ns["ssconf_basic_v2ray_alterid_" + node_global_max] = vmess_node.aid;
-				ns["ssconf_basic_v2ray_network_" + node_global_max] = vmess_node.net;
+				ns[p + "_server_" + node_global_max] = vmess_node.add;
+				ns[p + "_port_" + node_global_max] = vmess_node.port;
+				ns[p + "_v2ray_uuid_" + node_global_max] = vmess_node.id;
+				ns[p + "_v2ray_security_" + node_global_max] = "auto";
+				ns[p + "_v2ray_alterid_" + node_global_max] = vmess_node.aid;
+				ns[p + "_v2ray_network_" + node_global_max] = vmess_node.net;
 				if(vmess_node.net == "tcp"){
-					ns["ssconf_basic_v2ray_headtype_tcp_" + node_global_max] = vmess_node.type;
+					ns[p + "_v2ray_headtype_tcp_" + node_global_max] = vmess_node.type;
 				}else if(vmess_node.net == "kcp"){
-					ns["ssconf_basic_v2ray_headtype_kcp_" + node_global_max] = vmess_node.type;
+					ns[p + "_v2ray_headtype_kcp_" + node_global_max] = vmess_node.type;
 				}
-				ns["ssconf_basic_v2ray_network_host_" + node_global_max] = vmess_node.host;
-				ns["ssconf_basic_v2ray_network_path_" + node_global_max] = vmess_node.path;
+				ns[p + "_v2ray_network_host_" + node_global_max] = vmess_node.host;
+				ns[p + "_v2ray_network_path_" + node_global_max] = vmess_node.path;
 				if(vmess_node.tls == "tls"){
-					ns["ssconf_basic_v2ray_network_security_" + node_global_max] = "tls";
+					ns[p + "_v2ray_network_security_" + node_global_max] = "tls";
 				}else{
-					ns["ssconf_basic_v2ray_network_security_" + node_global_max] = "none";
+					ns[p + "_v2ray_network_security_" + node_global_max] = "none";
 				}	
-				ns["ssconf_basic_v2ray_mux_enable_" + node_global_max] = 1;
-				ns["ssconf_basic_v2ray_mux_concurrency_" + node_global_max] = 8;
-				ns["ssconf_basic_v2ray_use_json_" + node_global_max] = 0;
-				ns["ssconf_basic_v2ray_json_" + node_global_max] = "";
+				ns[p + "_v2ray_mux_enable_" + node_global_max] = 1;
+				ns[p + "_v2ray_mux_concurrency_" + node_global_max] = 8;
+				ns[p + "_v2ray_use_json_" + node_global_max] = 0;
+				ns[p + "_v2ray_json_" + node_global_max] = "";
 			}else{
-				console.log("use v2ray json")
-				ns["ssconf_basic_v2ray_json_" + node_global_max] = Base64.encode(pack_js(document.getElementById('ss_node_table_v2ray_json').value));
+				if (E("ss_node_table_v2ray_use_json").checked == true){
+					if(isJSON(E('ss_node_table_v2ray_json').value)){
+						if(E('ss_node_table_v2ray_json').value.indexOf("outbound") != -1){
+							ns[p + "_v2ray_json_" + node_global_max] = Base64.encode(pack_js(E('ss_node_table_v2ray_json').value));
+						}else{
+							alert("错误！你的json配置文件有误！\n正确格式请参考:https://www.v2ray.com/chapter_02/01_overview.html");
+							return false;
+						}
+					}else{
+						alert("错误！检测到你输入的v2ray配置不是标准json格式！");
+						return false;
+					}
+				}
 			}
 		}
 		ns[p + "_type_" + node_global_max] = "3";
@@ -1285,8 +1315,8 @@ function add_ss_node_conf(flag) { //点击添加按钮动作
 				E("ss_node_table_password").value = "";
 				E("ss_node_table_method").value = "aes-256-cfb";
 				E("ss_node_table_mode").value = "1";
-				E("ss_node_table_ss_obfs").value = "0"
-				E("ss_node_table_ss_obfs_host").value = "";
+				E("ss_node_table_ss_v2ray_plugin").value = "0"
+				E("ss_node_table_ss_v2ray_plugin_opts").value = "";
 				E("ss_node_table_rss_protocol").value = "origin";
 				E("ss_node_table_rss_protocol_param").value = "";
 				E("ss_node_table_rss_obfs").value = "plain";
@@ -1328,22 +1358,22 @@ function refresh_html() {
 			E("ss_node_list_table_btn").style.top = "995px";
 		} else {
 			E("ss_node_list_table_th").style.top = "272px";
-			E("ss_node_list_table_td").style.top = "318px";
-			E("ss_node_list_table_btn").style.top = "843px";
+			E("ss_node_list_table_td").style.top = "315px";
+			E("ss_node_list_table_btn").style.top = "840px";
 		}
 		$("#ss_node_list_table_th")[0].style.display = '';
-		$("#ss_node_list_table_th")[0].style.width = '749.71px';
-		$("#ss_node_list_table_td")[0].style.width = '749.71px';
+		$("#ss_node_list_table_th")[0].style.width = '748px';
+		$("#ss_node_list_table_td")[0].style.width = '749px';
 		$("#ss_node_list_table_td")[0].style.height = '520px';
 		$("#ss_node_list_table_td")[0].style.overflow = 'hidden';
 		$("#ss_node_list_table_td")[0].style.position = 'absolute';
 		$("#hide_when_folw")[0].style.display = 'none'
-		$("#ss_node_list_table_main")[0].style["width"] = '749.71px';
+		$("#ss_node_list_table_main")[0].style["width"] = '748px';
 		$("#ss_node_list_table_main")[0].style["height"] = '520px';
 		$("#ss_node_list_table_main")[0].style["overflow-x"] = 'hidden';
 		$("#ss_node_list_table_main")[0].style["overflow-y"] = 'scroll';
 		$("#ss_node_list_table_main")[0].style["padding-right"] = '30px';
-		$("#ss_node_list_table_btn")[0].style.width = '749.71px';
+		$("#ss_node_list_table_btn")[0].style.width = '748px';
 		$("#ss_node_list_table_btn")[0].style.position = 'absolute';
 		$("#ss_node_list_table_btn")[0].style.margin = '';
 	} else { //当节点数量小于等于13个的是否，显示为absolute，节点不可滚动
@@ -1351,6 +1381,7 @@ function refresh_html() {
 		$("#ss_node_list_table_td")[0].style.top = '';
 		$("#ss_node_list_table_btn")[0].style.top = '';
 		$("#ss_node_list_table_th")[0].style.display = 'none';
+		$("#ss_node_list_table_td")[0].style.width = '748px';
 		$("#ss_node_list_table_td")[0].style.height = '';
 		$("#ss_node_list_table_td")[0].style.overflow = '';
 		$("#ss_node_list_table_td")[0].style.position = '';
@@ -1518,7 +1549,7 @@ function remove_conf_table(o) { //删除节点功能
 	var p = "ssconf_basic";
 	id = ids[ids.length - 1];
 	var ns = {};
-	var params = ["name", "server", "server_ip", "mode", "port", "password", "method", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "use_kcp", "ss_obfs", "ss_obfs_host", "koolgame_udp", "ping", "web_test", "use_lb", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type"];
+	var params = ["name", "server", "server_ip", "mode", "port", "password", "method", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "use_kcp", "ss_v2ray_plugin", "ss_v2ray_plugin_opts", "koolgame_udp", "ping", "web_test", "use_lb", "lbmode", "weight", "use_kcp", "group", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency", "v2ray_json", "v2ray_use_json", "v2ray_mux_enable", "type"];
 	for (var i = 0; i < params.length; i++) {
 		ns[p + "_" + params[i] + "_" + id] = "";
 	}
@@ -1545,7 +1576,7 @@ function edit_conf_table(o) { //编辑节点功能，显示编辑面板
 	var c = confs[id];
 	var params1_base64 = ["password"];
 	var params1_check = ["v2ray_use_json", "v2ray_mux_enable"];
-	var params1_input = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "koolgame_udp", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency"];
+	var params1_input = ["name", "server", "mode", "port", "method", "ss_v2ray_plugin", "ss_v2ray_plugin_opts", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param", "koolgame_udp", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency"];
 	if(c["v2ray_json"]){
 		E("ss_node_table_v2ray_json").value = do_js_beautify(Base64.decode(c["v2ray_json"]));
 	}
@@ -1613,7 +1644,7 @@ function edit_conf_table(o) { //编辑节点功能，显示编辑面板
 function edit_ss_node_conf(flag) { //编辑节点功能，数据重写
 	var ns = {};
 	var p = "ssconf_basic";
-	var params1 = ["name", "server", "mode", "port", "method", "ss_obfs", "ss_obfs_host"]; //for ss
+	var params1 = ["name", "server", "mode", "port", "method", "ss_v2ray_plugin", "ss_v2ray_plugin_opts"]; //for ss
 	var params2 = ["name", "server", "mode", "port", "method", "rss_protocol", "rss_protocol_param", "rss_obfs", "rss_obfs_param"]; //for ssr
 	var params3 = ["name", "server", "mode", "port", "method", "koolgame_udp"]; //for ssr
 	var params4_1 = ["mode", "name", "server", "port", "v2ray_uuid", "v2ray_alterid", "v2ray_security", "v2ray_network", "v2ray_headtype_tcp", "v2ray_headtype_kcp", "v2ray_network_path", "v2ray_network_host", "v2ray_network_security", "v2ray_mux_concurrency"]; //for v2ray
@@ -1678,7 +1709,7 @@ function edit_ss_node_conf(flag) { //编辑节点功能，数据重写
 				ns["ssconf_basic_v2ray_json_" + myid] = "";
 			}else{
 				console.log("use v2ray json");
-				ns["ssconf_basic_v2ray_json_" + myid] = Base64.encode(pack_js(document.getElementById('ss_node_table_v2ray_json').value));
+				ns["ssconf_basic_v2ray_json_" + myid] = Base64.encode(pack_js(E('ss_node_table_v2ray_json').value));
 			}
 		}
 		ns[p + "_type_" + myid] = "3";
@@ -1701,8 +1732,8 @@ function edit_ss_node_conf(flag) { //编辑节点功能，数据重写
 			E("ss_node_table_password").value = "";
 			E("ss_node_table_method").value = "aes-256-cfb";
 			E("ss_node_table_mode").value = "1";
-			E("ss_node_table_ss_obfs").value = "0"
-			E("ss_node_table_ss_obfs_host").value = "";
+			E("ss_node_table_ss_v2ray_plugin").value = "0"
+			E("ss_node_table_ss_v2ray_plugin_opts").value = "";
 			E("ss_node_table_rss_protocol").value = "origin";
 			E("ss_node_table_rss_protocol_param").value = "";
 			E("ss_node_table_rss_obfs").value = "plain";
@@ -1930,10 +1961,12 @@ function version_show() {
 			if (typeof(res["version"]) != "undefined" && res["version"].length > 0) {
 				if (res["version"] == db_ss["ss_basic_version_local"]) {
 					$("#ss_version_show").html("<a class='hintstyle' href='javascript:void(12);' onclick='openssHint(12)'><i>当前版本：" + db_ss['ss_basic_version_local'] + "</i></a>");
-				} else if (res["version"] != db_ss["ss_basic_version_local"]) {
+				} else {
 					if (typeof(db_ss["ss_basic_version_local"]) != "undefined") {
-						$("#ss_version_show").html("<a class='hintstyle' href='javascript:void(12);' onclick='openssHint(12)'><i>当前版本：" + db_ss['ss_basic_version_local'] + "</i></a>");
-						$("#updateBtn").html("<i>升级到：" + res.version + "</i>");
+					    if (res["version"] > db_ss["ss_basic_version_local"]) {
+						    $("#ss_version_show").html("<a class='hintstyle' href='javascript:void(12);' onclick='openssHint(12)'><i>当前版本：" + db_ss['ss_basic_version_local'] + "</i></a>");
+						    $("#updateBtn").html("<i>升级到：" + res.version + "</i>");
+					    }
 					} else {
 						$("#ss_version_show").html("<a class='hintstyle' href='javascript:void(12);' onclick='openssHint(12)'><i>当前版本：未知</i></a>");
 					}
@@ -1946,39 +1979,39 @@ function version_show() {
 function get_ss_status_data() {
 	if (checkss < 10000) {
 		checkss++;
-		refreshRate = $("#ss_basic_refreshrate").val();
 		$.ajax({
 			type: "get",
 			url: "/dbconf?p=ss_basic_enable",
 			dataType: "script",
 			success: function() {
-				if (refreshRate != 0) {
-					if (db_ss_basic_enable['ss_basic_enable'] == "1") {
-						$.ajax({
-							url: '/ss_status',
-							dataType: "html",
-							success: function(response) {
-								var arr = JSON.parse(response);
-								if (arr[0] == "" || arr[1] == "") {
-									E("ss_state2").innerHTML = "国外连接 - " + "Waiting for first refresh...";
-									E("ss_state3").innerHTML = "国内连接 - " + "Waiting for first refresh...";
-								} else {
-									E("ss_state2").innerHTML = arr[0];
-									E("ss_state3").innerHTML = arr[1];
-								}
+				if (db_ss_basic_enable['ss_basic_enable'] == "1") {
+					$.ajax({
+						url: '/ss_status',
+						dataType: "html",
+						success: function(response) {
+							console.log(response)
+							var arr = JSON.parse(response);
+							if (arr[0] == "" || arr[1] == "") {
+								E("ss_state2").innerHTML = "国外连接 - " + "Waiting for first refresh...";
+								E("ss_state3").innerHTML = "国内连接 - " + "Waiting for first refresh...";
+							} else {
+								E("ss_state2").innerHTML = arr[0];
+								E("ss_state3").innerHTML = arr[1];
 							}
-						});
-					} else {
-						E("ss_state2").innerHTML = "国外连接 - " + "Waiting...";
-						E("ss_state3").innerHTML = "国内连接 - " + "Waiting...";
-					}
+						}
+					});
+				} else {
+					E("ss_state2").innerHTML = "国外连接 - " + "Waiting...";
+					E("ss_state3").innerHTML = "国内连接 - " + "Waiting...";
 				}
-				if (refreshRate > 0) {
-					setTimeout("get_ss_status_data();", refreshRate * 1000);
-				}
+				refreshRate = Math.floor(Math.random() * 4000) + 4000;
+				setTimeout("get_ss_status_data();", refreshRate);
 			}
 
 		});
+	}else{
+		E("ss_state2").innerHTML = "国外连接 - " + "Waiting...";
+		E("ss_state3").innerHTML = "国内连接 - " + "Waiting...";
 	}
 }
 
@@ -2419,7 +2452,6 @@ function reload_Soft_Center() {
 	location.href = "/Main_Soft_center.asp";
 }
 
-
 function getACLConfigs() {
 	var dict = {};
 	acl_node_max = 0;
@@ -2826,104 +2858,104 @@ function v2ray_binary_update (){
 function status_onchange(){
     var __ss_reboot_check="";
     var ___ss_basic_inter_pre="";
-    __ss_reboot_check=document.getElementById("ss_reboot_check").value;
-    ___ss_basic_inter_pre=document.getElementById("ss_basic_inter_pre").value;
+    __ss_reboot_check=E("ss_reboot_check").value;
+    ___ss_basic_inter_pre=E("ss_basic_inter_pre").value;
     //alert(__ss_reboot_check)
     if (__ss_reboot_check == "0") {
-        document.getElementById('_ss_basic_day_pre').style.display="none";
-        document.getElementById('_ss_basic_week_pre').style.display="none";
-        document.getElementById('_ss_basic_time_pre').style.display="none";
-        document.getElementById('_ss_basic_inter_pre').style.display="none";
-        document.getElementById('_ss_basic_custom_pre').style.display="none";
-        document.getElementById('_ss_basic_send_text').style.display="none";
+        E('_ss_basic_day_pre').style.display="none";
+        E('_ss_basic_week_pre').style.display="none";
+        E('_ss_basic_time_pre').style.display="none";
+        E('_ss_basic_inter_pre').style.display="none";
+        E('_ss_basic_custom_pre').style.display="none";
+        E('_ss_basic_send_text').style.display="none";
     } else if(__ss_reboot_check == "1"){
-        document.getElementById('_ss_basic_week_pre').style.display="none";
-        document.getElementById('_ss_basic_day_pre').style.display="none";
-        document.getElementById('_ss_basic_time_pre').style.display="inline";
-        document.getElementById('_ss_basic_inter_pre').style.display="none";
-        document.getElementById('_ss_basic_custom_pre').style.display="none";
-        document.getElementById('_ss_basic_send_text').style.display="inline";
-        document.getElementById('ss_basic_time_hour').style.display="inline";
+        E('_ss_basic_week_pre').style.display="none";
+        E('_ss_basic_day_pre').style.display="none";
+        E('_ss_basic_time_pre').style.display="inline";
+        E('_ss_basic_inter_pre').style.display="none";
+        E('_ss_basic_custom_pre').style.display="none";
+        E('_ss_basic_send_text').style.display="inline";
+        E('ss_basic_time_hour').style.display="inline";
     } else if(__ss_reboot_check == "2"){
-        document.getElementById('_ss_basic_week_pre').style.display="inline";
-        document.getElementById('_ss_basic_day_pre').style.display="none";
-        document.getElementById('_ss_basic_time_pre').style.display="inline";
-        document.getElementById('_ss_basic_inter_pre').style.display="none";
-        document.getElementById('_ss_basic_custom_pre').style.display="none";
-        document.getElementById('ss_basic_time_hour').style.display="inline";
-        document.getElementById('_ss_basic_send_text').style.display="inline";
+        E('_ss_basic_week_pre').style.display="inline";
+        E('_ss_basic_day_pre').style.display="none";
+        E('_ss_basic_time_pre').style.display="inline";
+        E('_ss_basic_inter_pre').style.display="none";
+        E('_ss_basic_custom_pre').style.display="none";
+        E('ss_basic_time_hour').style.display="inline";
+        E('_ss_basic_send_text').style.display="inline";
     } else if(__ss_reboot_check == "3"){
-        document.getElementById('_ss_basic_week_pre').style.display="none";
-        document.getElementById('_ss_basic_day_pre').style.display="inline";
-        document.getElementById('_ss_basic_time_pre').style.display="inline";
-        document.getElementById('_ss_basic_inter_pre').style.display="none";
-        document.getElementById('_ss_basic_custom_pre').style.display="none";
-        document.getElementById('ss_basic_time_hour').style.display="inline";
-        document.getElementById('_ss_basic_send_text').style.display="inline";
+        E('_ss_basic_week_pre').style.display="none";
+        E('_ss_basic_day_pre').style.display="inline";
+        E('_ss_basic_time_pre').style.display="inline";
+        E('_ss_basic_inter_pre').style.display="none";
+        E('_ss_basic_custom_pre').style.display="none";
+        E('ss_basic_time_hour').style.display="inline";
+        E('_ss_basic_send_text').style.display="inline";
     } else if(__ss_reboot_check == "4"){
-        document.getElementById('_ss_basic_week_pre').style.display="none";
-        document.getElementById('_ss_basic_day_pre').style.display="none";
-        document.getElementById('_ss_basic_time_pre').style.display="none";
-        document.getElementById('_ss_basic_inter_pre').style.display="inline";
-        document.getElementById('_ss_basic_custom_pre').style.display="none";
-        document.getElementById('_ss_basic_send_text').style.display="inline";
+        E('_ss_basic_week_pre').style.display="none";
+        E('_ss_basic_day_pre').style.display="none";
+        E('_ss_basic_time_pre').style.display="none";
+        E('_ss_basic_inter_pre').style.display="inline";
+        E('_ss_basic_custom_pre').style.display="none";
+        E('_ss_basic_send_text').style.display="inline";
         if (___ss_basic_inter_pre == "1") {
-            document.getElementById('ss_basic_inter_min').style.display="inline";
-            document.getElementById('ss_basic_inter_hour').style.display="none";
-            document.getElementById('ss_basic_inter_day').style.display="none";
-            document.getElementById('_ss_basic_time_pre').style.display="none";
-            document.getElementById('_ss_basic_inter_pre').style.display="inline";
-            document.getElementById('_ss_basic_send_text').style.display="inline";
+            E('ss_basic_inter_min').style.display="inline";
+            E('ss_basic_inter_hour').style.display="none";
+            E('ss_basic_inter_day').style.display="none";
+            E('_ss_basic_time_pre').style.display="none";
+            E('_ss_basic_inter_pre').style.display="inline";
+            E('_ss_basic_send_text').style.display="inline";
         } else if(___ss_basic_inter_pre == "2"){
-            document.getElementById('ss_basic_inter_min').style.display="none";
-            document.getElementById('ss_basic_inter_hour').style.display="inline";
-            document.getElementById('ss_basic_inter_day').style.display="none";
-            document.getElementById('_ss_basic_time_pre').style.display="none";
-            document.getElementById('_ss_basic_inter_pre').style.display="inline";
-            document.getElementById('_ss_basic_send_text').style.display="inline";
+            E('ss_basic_inter_min').style.display="none";
+            E('ss_basic_inter_hour').style.display="inline";
+            E('ss_basic_inter_day').style.display="none";
+            E('_ss_basic_time_pre').style.display="none";
+            E('_ss_basic_inter_pre').style.display="inline";
+            E('_ss_basic_send_text').style.display="inline";
         } else if(___ss_basic_inter_pre == "3"){
-            document.getElementById('ss_basic_inter_min').style.display="none";
-            document.getElementById('ss_basic_inter_hour').style.display="none";
-            document.getElementById('ss_basic_inter_day').style.display="inline";
-            document.getElementById('_ss_basic_time_pre').style.display="inline";
-            document.getElementById('_ss_basic_inter_pre').style.display="inline";
-            document.getElementById('_ss_basic_send_text').style.display="inline";
-            document.getElementById('ss_basic_time_hour').style.display="inline";
+            E('ss_basic_inter_min').style.display="none";
+            E('ss_basic_inter_hour').style.display="none";
+            E('ss_basic_inter_day').style.display="inline";
+            E('_ss_basic_time_pre').style.display="inline";
+            E('_ss_basic_inter_pre').style.display="inline";
+            E('_ss_basic_send_text').style.display="inline";
+            E('ss_basic_time_hour').style.display="inline";
         }
     } else if(__ss_reboot_check == "5"){
-        document.getElementById('_ss_basic_week_pre').style.display="none";
-        document.getElementById('_ss_basic_day_pre').style.display="none";
-        document.getElementById('_ss_basic_time_pre').style.display="inline";
-        document.getElementById('_ss_basic_inter_pre').style.display="none";
-        document.getElementById('_ss_basic_custom_pre').style.display="inline";
-        document.getElementById('_ss_basic_send_text').style.display="inline";
-        document.getElementById('ss_basic_time_hour').style.display="none";
+        E('_ss_basic_week_pre').style.display="none";
+        E('_ss_basic_day_pre').style.display="none";
+        E('_ss_basic_time_pre').style.display="inline";
+        E('_ss_basic_inter_pre').style.display="none";
+        E('_ss_basic_custom_pre').style.display="inline";
+        E('_ss_basic_send_text').style.display="inline";
+        E('ss_basic_time_hour').style.display="none";
     }
 }
 function inter_pre_onchange(){
     var __ss_basic_inter_pre="";
-    __ss_basic_inter_pre=document.getElementById("ss_basic_inter_pre").value;
+    __ss_basic_inter_pre=E("ss_basic_inter_pre").value;
     if (__ss_basic_inter_pre == "1") {
-        document.getElementById('ss_basic_inter_min').style.display="inline";
-        document.getElementById('ss_basic_inter_hour').style.display="none";
-        document.getElementById('ss_basic_inter_day').style.display="none";
-        document.getElementById('_ss_basic_time_pre').style.display="none";
-        document.getElementById('_ss_basic_inter_pre').style.display="inline";
-        document.getElementById('_ss_basic_send_text').style.display="inline";
+        E('ss_basic_inter_min').style.display="inline";
+        E('ss_basic_inter_hour').style.display="none";
+        E('ss_basic_inter_day').style.display="none";
+        E('_ss_basic_time_pre').style.display="none";
+        E('_ss_basic_inter_pre').style.display="inline";
+        E('_ss_basic_send_text').style.display="inline";
     } else if(__ss_basic_inter_pre == "2"){
-        document.getElementById('ss_basic_inter_min').style.display="none";
-        document.getElementById('ss_basic_inter_hour').style.display="inline";
-        document.getElementById('ss_basic_inter_day').style.display="none";
-        document.getElementById('_ss_basic_time_pre').style.display="none";
-        document.getElementById('_ss_basic_inter_pre').style.display="inline";
-        document.getElementById('_ss_basic_send_text').style.display="inline";
+        E('ss_basic_inter_min').style.display="none";
+        E('ss_basic_inter_hour').style.display="inline";
+        E('ss_basic_inter_day').style.display="none";
+        E('_ss_basic_time_pre').style.display="none";
+        E('_ss_basic_inter_pre').style.display="inline";
+        E('_ss_basic_send_text').style.display="inline";
     } else if(__ss_basic_inter_pre == "3"){
-        document.getElementById('ss_basic_inter_min').style.display="none";
-        document.getElementById('ss_basic_inter_hour').style.display="none";
-        document.getElementById('ss_basic_inter_day').style.display="inline";
-        document.getElementById('_ss_basic_time_pre').style.display="inline";
-        document.getElementById('_ss_basic_inter_pre').style.display="inline";
-        document.getElementById('_ss_basic_send_text').style.display="inline";
+        E('ss_basic_inter_min').style.display="none";
+        E('ss_basic_inter_hour').style.display="none";
+        E('ss_basic_inter_day').style.display="inline";
+        E('_ss_basic_time_pre').style.display="inline";
+        E('_ss_basic_inter_pre').style.display="inline";
+        E('_ss_basic_send_text').style.display="inline";
     }
 }
 
@@ -3206,20 +3238,19 @@ function set_cron(action) {
 																	</select>
 																</td>	
 															</tr>
-															<tr id="ss_obfs_support" style="display: none;">
-																<th>混淆 (obfs)</th>
+															<tr id="ss_v2ray_plugin_support" style="display: none;">
+																<th>v2ray-plugin</th>
 																<td>
-																	<select name="ss_node_table_ss_obfs" id="ss_node_table_ss_obfs" class="input_option" style="width:350px;margin:0px 0px 0px 2px;" onchange="verifyFields(this, 1);">
-																		<option value="0" selected>否</option>
-																		<option value="http">http</option>
-																		<option value="tls">tls</option>
+																	<select name="ss_node_table_ss_v2ray_plugin" id="ss_node_table_ss_v2ray_plugin" class="input_option" style="width:350px;margin:0px 0px 0px 2px;" onchange="verifyFields(this, 1);">
+																		<option value="0" selected>关闭</option>
+																		<option value="1">启用</option>
 																	</select>
 																</td>
 															</tr>
-															<tr id="ss_obfs_host_support" style="display: none;">
-																<th>混淆主机名 (obfs-host)</th>
+															<tr id="ss_v2ray_plugin_opts_support" style="display: none;">
+																<th>v2ray-plugin参数</th>
 																<td>
-																	<input type="text" name="ss_node_table_ss_obfs_host" id="ss_node_table_ss_obfs_host" placeholder="bing.com"  class="input_ss_table" style="width:342px;" maxlength="100" value=""/>
+																	<input type="text" name="ss_node_table_ss_v2ray_plugin_opts" id="ss_node_table_ss_v2ray_plugin_opts" placeholder="tls;host=cloudfront.com"  class="input_ss_table" style="width:342px;" maxlength="100" value=""/>
 																</td>
 															</tr>
 															<tr id="ssr_protocol_tr" style="display: none;">
@@ -3480,20 +3511,19 @@ function set_cron(action) {
 														</select>
 													</td>
 												</tr>
-												<tr id="ss_obfs">
-													<th width="35%">混淆 (obfs)</th>
+												<tr id="ss_v2ray_plugin">
+													<th width="35%">v2ray-plugin</th>
 													<td>
-														<select id="ss_basic_ss_obfs" name="ss_basic_ss_obfs" style="width:164px;margin:0px 0px 0px 2px;" class="input_option"  onchange="verifyFields(this, 1);" >
+														<select id="ss_basic_ss_v2ray_plugin" name="ss_basic_ss_v2ray_plugin" style="width:164px;margin:0px 0px 0px 2px;" class="input_option"  onchange="verifyFields(this, 1);" >
 															<option class="content_input_fd" value="0">关闭</option>
-															<option class="content_input_fd" value="tls">tls</option>
-															<option class="content_input_fd" value="http">http</option>
+															<option class="content_input_fd" value="1">启用</option>
 														</select>
 													</td>
 												</tr>
-												<tr id="ss_obfs_host">
-													<th width="35%">混淆主机名 (obfs_host)</th>
+												<tr id="ss_v2ray_plugin_opts">
+													<th width="35%">v2ray-plugin参数</th>
 													<td>
-														<input type="text" name="ss_basic_ss_obfs_host" id="ss_basic_ss_obfs_host" placeholder="bing.com"  class="input_ss_table" maxlength="100" value=""/>
+														<input type="text" name="ss_basic_ss_v2ray_plugin_opts" id="ss_basic_ss_v2ray_plugin_opts" placeholder="tls;host=cloudfront.com"  class="input_ss_table" maxlength="100" value=""/>
 													</td>
 												</tr>
 												
@@ -3690,7 +3720,7 @@ function set_cron(action) {
 											</table>
 										</div>
 										<div id="ss_node_list_table_td" style="display: none;">
-											<div id="ss_node_list_table_main" style="width:749.71px;">
+											<div id="ss_node_list_table_main" style="width:748px;">
 												<table id="ss_node_list_table" style="margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable1">
 													<tr id="hide_when_folw" height="40px" style="display: none;">
 														<th style="width:40px;"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(16)">模式</a></th>
@@ -3758,8 +3788,8 @@ function set_cron(action) {
 															<option value="5">114DNS1【114.114.115.115】</option>
 															<option value="6">cnnic DNS【1.2.4.8】</option>
 															<option value="7">cnnic DNS【210.2.4.8】</option>
-															<option value="8">oneDNS1【112.124.47.27】</option>
-															<option value="9">oneDNS2【114.215.126.16】</option>
+															<option value="8">oneDNS1【117.50.11.11】</option>
+															<option value="9">oneDNS2【117.50.22.22】</option>
 															<option value="10">百度DNS【180.76.76.76】</option>
 															<option value="11">DNSpod DNS【119.29.29.29】</option>
 															<option value="12">自定义</option>
@@ -3799,6 +3829,32 @@ function set_cron(action) {
 														<input type="text" class="input_ss_table" id="ss_game2_dns2ss_user" name="ss_game2_dns2ss_user" placeholder="需端口号如：8.8.8.8:53" value="8.8.8.8:53">
 														<br/>
 															<span id="dns_plan_foreign0">默认使用koolgame内置的DNS2SS域名解析</span>
+													</td>
+												</tr>
+												<tr>
+													<th>DNS劫持（原chromecast功能）&nbsp;&nbsp;<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(106)"><font color="#ffcc00"><u>[说明]</u></font></a></th>
+													<td>
+														<input type="checkbox" id="ss_basic_dns_hijack" onclick="verifyFields(this, 1);" checked="" />
+													</td>
+												</tr>
+												<tr>
+													<th>节点域名解析DNS服务器&nbsp;&nbsp;<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(107)"><font color="#ffcc00"><u>[说明]</u></font></a></th>
+													<td>
+														<select id="ss_basic_server_resolver" name="ss_basic_server_resolver" class="input_option" onclick="update_visibility();" >
+															<option value="1" selected>运营商DNS【自动获取】</option>
+															<option value="2">阿里DNS1【223.5.5.5】</option>
+															<option value="3">阿里DNS2【223.6.6.6】</option>
+															<option value="4">114DNS1【114.114.114.114】</option>
+															<option value="5">114DNS1【114.114.115.115】</option>
+															<option value="6">cnnic DNS【1.2.4.8】</option>
+															<option value="7">cnnic DNS【210.2.4.8】</option>
+															<option value="8">oneDNS1【117.50.11.11】</option>
+															<option value="9">oneDNS2【117.50.22.22】</option>
+															<option value="10">百度DNS【180.76.76.76】</option>
+															<option value="11">DNSpod DNS【119.29.29.29】</option>
+															<option value="12">自定义</option>
+														</select>
+														<input type="text" class="input_ss_table" id="ss_basic_server_resolver_user" name="ss_basic_server_resolver_user" value="">
 													</td>
 												</tr>
 												<tr>
@@ -4606,19 +4662,6 @@ taobao.com
 										<!--===== addon =====-->
 										<div id="tablet_6" style="display: none;">
 											<table style="margin:-1px 0px 0px 0px;" width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable" >
-												<tr>
-													<th><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(42)">状态更新间隔</a></th>
-													<td>
-														<select id="ss_basic_refreshrate" name="ss_basic_refreshrate" class="input_option">
-															<option value="0">不更新</option>
-															<option value="5" selected>5s</option>
-															<option value="10">10s</option>
-															<option value="15">15s</option>
-															<option value="30">30s</option>
-															<option value="60">60s</option>
-														</select>
-													</td>
-												</tr>
 												<tr>
 													<th style="width:20%;"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(24)">导出SS配置</a></th>
 													<td>
